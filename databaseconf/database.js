@@ -15,6 +15,15 @@ const db = {}
 db.Sequelize = Sequelize
 db.sequelize = sequelize
 
+
+db.users = require("../models/auth")(sequelize,DataTypes)
+
+
+sequelize.sync({alter:false}).then(()=>{
+    console.log("migrate sucessfully")
+})
+
+
 module.exports = db
 
  
