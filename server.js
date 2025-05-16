@@ -5,15 +5,17 @@ const app = express()
 configDotenv()
 const authroute = require("./route/auth")
 const cookieParser = require("cookie-parser")
+const cors = require('cors') 
 
 //database integration
-db
+db 
 app.use(express.json())
 app.use(cookieParser())
+app.use(cors())
 
 app.use("/auth",authroute)
 
-
+  
 const port = process.env.PORT
 
 app.listen(port,()=>{

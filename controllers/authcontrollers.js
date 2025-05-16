@@ -1,27 +1,25 @@
 const jwt = require("jsonwebtoken")
 const bcrypt = require('bcrypt')
 const {users } = require("../databaseconf/database")
-const { where } = require("sequelize")
-
+const { configDotenv } = require("dotenv")
+configDotenv()
 exports.usersignup = async(req,res)=>{
 try {
     const {username,email,password} = req.body
     if(!username || !email || !password) return res.status(401).json({error:"all fields are mendatory"})
-    
+
+        const userexists = await users.findOne({where:{email}})
+        if(userexists) return res.status(401).json("users already exists")
+
     const hashedpassword = await bcrypt.hash(password,8)
 
-    const user = await users.create({
+    await users.create({
       username,
       email,
       password:hashedpassword
     })
-    const token =  jwt.sign({id:user._id,username:user.username,email:user.email},"secretekey",{
-        expiresIn:"1d"
-    })
-
-    return res.status(201).cookie("token",token,{
-        httpOnly:true
-    }) .json({ message: "User created successfully", user });
+   
+    return res.status(201).json({"message":"user created sucessfully"})
 
     
 } catch (error) {
@@ -44,13 +42,16 @@ try {
     if(!passwordmatch) return res.status(401).json({error:"password not matched"})
     
     //token create
-    const token =  jwt.sign({id:user._id,username:user.username,email:user.email},"secretekey",{
+    const token =  jwt.sign({id:user._id,username:user.username,email:user.email},process.env.SECRETE_KEY,{
         expiresIn:"1d"
     })
 
-    return res.status(201).cookie("token",token,{
-        httpOnly:true
-    }) .json({ message: "user login successfully", user });
+    res.cookie("token",token,{
+        httpOnly:true,
+        secure:true,
+        expiresIn:'7 * 24 * 60 * 60 * 1000'
+    }) 
+    return res.status(200).json({ user });
 
     
 } catch (error) {

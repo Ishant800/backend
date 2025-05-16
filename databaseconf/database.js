@@ -4,7 +4,7 @@ configDotenv()
 
 
 //database connection string
-const DBURL = process.env.DATABASE_URL
+const DBURL = process.env.DATABASE_URL 
 const sequelize = new Sequelize(DBURL)
 
 sequelize.authenticate()
@@ -14,7 +14,7 @@ sequelize.authenticate()
 const db = {}
 db.Sequelize = Sequelize
 db.sequelize = sequelize
-
+ 
 
 db.users = require("../models/auth")(sequelize,DataTypes)
 
