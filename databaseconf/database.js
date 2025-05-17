@@ -1,5 +1,5 @@
 const { configDotenv } = require('dotenv')
-const {Sequelize,DataTypes} = require('sequelize')
+const {Sequelize} = require('sequelize')
 configDotenv()
 
 
@@ -15,14 +15,6 @@ const db = {}
 db.Sequelize = Sequelize
 db.sequelize = sequelize
  
-
-db.users = require("../models/auth")(sequelize,DataTypes)
-
-
-sequelize.sync({alter:false}).then(()=>{
-    console.log("migrate sucessfully")
-})
-
 
 module.exports = db
 

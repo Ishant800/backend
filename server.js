@@ -15,6 +15,15 @@ app.use(cors())
 
 app.use("/auth",authroute)
 
+
+//importing models 
+require('./models/auth')
+
+//for table migrates
+db.sequelize.sync({alter:false}).then(()=>{
+    console.log("migrate sucessfully")
+})
+
   
 const port = process.env.PORT
 

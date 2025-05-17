@@ -1,61 +1,92 @@
-const jwt = require("jsonwebtoken")
-const bcrypt = require('bcrypt')
-const {users } = require("../databaseconf/database")
-const { configDotenv } = require("dotenv")
-configDotenv()
-exports.usersignup = async(req,res)=>{
-try {
-    const {username,email,password} = req.body
-    if(!username || !email || !password) return res.status(401).json({error:"all fields are mendatory"})
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const { configDotenv } = require("dotenv");
+const { User, UserDetails } = require("../models/auth");
+configDotenv();
 
-        const userexists = await users.findOne({where:{email}})
-        if(userexists) return res.status(401).json("users already exists")
+exports.usersignup = async (req, res) => {
+  try {
+    console.log("Request Body:", req.body); 
+    const { username, email, password } = req.body;
 
-    const hashedpassword = await bcrypt.hash(password,8)
+    if (!username || !email || !password)
+      return res.status(401).json({ error: "All fields are mandatory" });
 
-    await users.create({
+    const userexists = await User.findOne({ where: { email } });
+    if (userexists) return res.status(401).json({ error: "User already exists" });
+
+    const hashedpassword = await bcrypt.hash(password, 8);
+
+    await User.create({
       username,
       email,
-      password:hashedpassword
-    })
-   
-    return res.status(201).json({"message":"user created sucessfully"})
+      password: hashedpassword,
+    });
 
-    
-} catch (error) {
-    console.log(error)
-    return res.status(500).json({error:"internal server error"})
-}
-}
+    return res.status(201).json({ message: "User created successfully" });
+  } catch (error) {
+    console.error("Signup Error:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
 
-exports.userlogin = async(req,res)=>{
-try {
-    const {email,password} = req.body
-    if(!email || !password) return res.status(401).json({error:"all fields are mendatory"})
-    
-        //check user exists or not
-    const user = await users.findOne({where:{email}})
-    if(!user) return res.status(401).json({error:"user not found"})
-    
-        //matched password
-    const passwordmatch = await bcrypt.compare(password,user.password)
-    if(!passwordmatch) return res.status(401).json({error:"password not matched"})
-    
-    //token create
-    const token =  jwt.sign({id:user._id,username:user.username,email:user.email},process.env.SECRETE_KEY,{
-        expiresIn:"1d"
-    })
+exports.userlogin = async (req, res) => {
+  try {
+    console.log("Request Body:", req.body); 
+    const { email, password } = req.body;
 
-    res.cookie("token",token,{
-        httpOnly:true,
-        secure:true,
-        expiresIn:'7 * 24 * 60 * 60 * 1000'
-    }) 
+    if (!email || !password)
+      return res.status(401).json({ error: "All fields are mandatory" });
+
+    const user = await User.findOne({ where: { email } });
+    if (!user) return res.status(401).json({ error: "User not found" });
+
+    const passwordmatch = await bcrypt.compare(password, user.password);
+    if (!passwordmatch) return res.status(401).json({ error: "Password not matched" });
+
+    const token = jwt.sign(
+      { id: user.userid, username: user.username, email: user.email },
+      process.env.SECRET_KEY,
+      { expiresIn: "7d" }
+    );
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
     return res.status(200).json({ user });
+  } catch (error) {
+    console.error("Login Error:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
 
-    
-} catch (error) {
-    console.log(error)
-    return res.status(500).json({error:"internal server error"})
-}
+
+exports.profileupdate = async(req,res)=>{
+    try {
+       const userId = req.params.id
+       console.log(userId)
+
+       if(!userId) return res.status(401).json({error:"missing userid"})
+       const existsuser = await User.findOne({
+    where:{
+        userid:userId
+    }})
+
+if(!existsuser) return res.status(401).json({error:"user not found"})
+
+    const updateuser = await UserDetails.create({
+        userid:existsuser.userid,...req.body
+    })
+
+if(updateuser)
+    return res.status(201).json({"message":"user update sucessfully"})
+
+
+     } catch (error) {
+        console.log(error)
+        return res.status(500).json({error:"internal server error"})
+    }
 }
