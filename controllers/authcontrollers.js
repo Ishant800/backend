@@ -46,7 +46,7 @@ exports.userlogin = async (req, res) => {
 
     const token = jwt.sign(
       { id: user.userid, username: user.username, email: user.email },
-      process.env.SECRET_KEY,
+      process.env.SECRETE_KEY,
       { expiresIn: "7d" }
     );
 
@@ -66,19 +66,28 @@ exports.userlogin = async (req, res) => {
 
 exports.profileupdate = async(req,res)=>{
     try {
-       const userId = req.params.id
-       console.log(userId)
+
+      const token = req.cookies.token
+      if(!token) return res.status(401).json({error:"missing token"})
+      
+        const decoded = jwt.verify(token,process.env.SECRETE_KEY)  
+        const userId = decoded.id
 
        if(!userId) return res.status(401).json({error:"missing userid"})
-       const existsuser = await User.findOne({
+      
+      const imagepath = req.file?.path
+      if(!imagepath) return res.status(401).json({error:"image url missing"})
+
+      
+        const existsuser = await User.findOne({
     where:{
-        userid:userId
+        userid:userId 
     }})
 
 if(!existsuser) return res.status(401).json({error:"user not found"})
 
     const updateuser = await UserDetails.create({
-        userid:existsuser.userid,...req.body
+        userid:existsuser.userid,profile_pic_url:imagepath,...req.body
     })
 
 if(updateuser)
