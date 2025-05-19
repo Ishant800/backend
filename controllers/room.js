@@ -47,3 +47,24 @@ exports.roomupdate = async(req,res)=>{
         return res.status(501).json({error:"internal error"})
     }
 }
+
+exports.deleteroom = async (req,res)=>{
+  try {
+    const id = req.params.id
+    const existroom = await Room.findOne({
+      where:{
+        roomid:id
+      }
+    })
+  if(!existroom) return res.status(401).json({Message:"room not found"})
+
+  await Room.destroy({where:{
+    roomid:id
+  }})
+
+  return res.status(200).json({Message:"room deleted sucessfully"})
+
+  } catch (error) {
+    return res.status(501).json({Message:"internal server error"})
+  }
+}

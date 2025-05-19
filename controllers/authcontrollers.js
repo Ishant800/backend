@@ -21,6 +21,7 @@ exports.usersignup = async (req, res) => {
       username,
       email,
       password: hashedpassword,
+      role:req.body.role
     });
 
     return res.status(201).json({ message: "User created successfully" });
@@ -45,18 +46,23 @@ exports.userlogin = async (req, res) => {
     if (!passwordmatch) return res.status(401).json({ error: "Password not matched" });
 
     const token = jwt.sign(
-      { id: user.userid, username: user.username, email: user.email },
+      { id: user.userid,role:user.role, username: user.username, email: user.email },
       process.env.SECRETE_KEY,
       { expiresIn: "7d" }
     );
 
+    const acesstoken = jwt.sign({
+      id:user.userid,role:user.role,username:user.username,email:user.email
+    },process.env.SECRETE_KEY,{expiresIn:'7d'})
+
+     
     res.cookie("token", token, {
       httpOnly: true,
       secure: true,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    return res.status(200).json({ user });
+    return res.status(200).json({ acesstoken });
   } catch (error) {
     console.error("Login Error:", error);
     return res.status(500).json({ error: "Internal server error" });
@@ -66,13 +72,7 @@ exports.userlogin = async (req, res) => {
 
 exports.profileupdate = async(req,res)=>{
     try {
-
-      const token = req.cookies.token
-      if(!token) return res.status(401).json({error:"missing token"})
-      
-        const decoded = jwt.verify(token,process.env.SECRETE_KEY)  
-        const userId = decoded.id
-
+      const userId = req.user.id
        if(!userId) return res.status(401).json({error:"missing userid"})
       
       const imagepath = req.file?.path

@@ -11,7 +11,10 @@ const cors = require('cors')
 db 
 app.use(express.json())
 app.use(cookieParser())
-app.use(cors())
+app.use(cors({
+  origin: "http://localhost:5173", // your frontend origin
+  credentials: true,              // allow cookies
+}));
 
 
 const authroute = require("./route/auth")

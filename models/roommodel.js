@@ -38,7 +38,7 @@ const Room = sequelize.define('Room',{
     status:{
         type:DataTypes.ENUM('booked','available','pending'),
         defaultValue:'available',
-        allowNull:false
+        allowNull:true
     },
     features:{
         type:DataTypes.ARRAY(DataTypes.STRING),
