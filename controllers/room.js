@@ -68,3 +68,36 @@ exports.deleteroom = async (req,res)=>{
     return res.status(501).json({Message:"internal server error"})
   }
 }
+
+exports.getrooms = async (req,res)=>{
+  try {
+   const rooms = await Room.findAll()
+   if(!rooms) return res.status(401).json({Message:"no rooms found"})
+   return res.status(200).json({rooms})
+
+  } catch (error) {
+    console.log(error)
+    return res.status(501).json({Message:"internal server error"})
+  }
+}
+
+exports.roomdetails = async (req,res)=>{
+  try{
+    const id = req.params.id
+    const existroom = await Room.findOne({
+      where:{
+        roomid:id
+      }
+    })
+  if(!existroom) return res.status(401).json({Message:"room not found in databases"})
+
+  await Room.destroy({where:{
+    roomid:id
+  }})
+
+  return res.status(200).json({Message:"room deleted sucessfully"})
+
+  } catch (error) {
+    return res.status(501).json({Message:"internal server error"})
+  }
+}
