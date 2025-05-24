@@ -2,19 +2,15 @@ const { Room } = require("../models/roommodel")
 
 exports.listroom = async(req,res)=>{
 try {
-   
-   const token = req.cookies?.token
-   if(!token) return res.status(401).json({error:"token not provided"})
-
-    if(!req.files || req.files.length === 0)
+    if(!req.file.path)
         console.log('files not found')
 
-  const imagepath = req.files.map(file=>file.path)
-  
-
-
+const imagepath = req.file?.path
+console.log(imagepath)
+const userid = req.user.id  
+if(!userid) return res.status("user id not found")
   const room = await Room.create({
-    images:imagepath,...req.body
+   userid:userid,images:imagepath,...req.body
   })
   return res.status(201).json({room:"room listed sucessfully",room})
 
@@ -24,7 +20,7 @@ return res.status(501).json({error:"internal server error"})
 }
 }
 
-
+ 
 exports.roomupdate = async(req,res)=>{
     try {
         const token = req.cookies.token
@@ -91,11 +87,9 @@ exports.roomdetails = async (req,res)=>{
     })
   if(!existroom) return res.status(401).json({Message:"room not found in databases"})
 
-  await Room.destroy({where:{
-    roomid:id
-  }})
+   
 
-  return res.status(200).json({Message:"room deleted sucessfully"})
+  return res.status(200).json({existroom})
 
   } catch (error) {
     return res.status(501).json({Message:"internal server error"})

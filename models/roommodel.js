@@ -19,24 +19,21 @@ const Room = sequelize.define('Room',{
         type:DataTypes.STRING,
         allowNull:false
     },
-    roomtype:{
-        type:DataTypes.ENUM('singleroom','double bed room','apartment','office'),
-        allowNull:false
-    },
+    
     roomsize:{
         type:DataTypes.STRING,
         allowNull:false
     },
     images:{
-        type:DataTypes.ARRAY(DataTypes.STRING(255)),
-        allowNull:false
+        type:DataTypes.STRING,
+        allowNull:true
     },
     description:{
         type:DataTypes.TEXT,
         allowNull:false
     },
     status:{
-        type:DataTypes.ENUM('booked','available','pending'),
+        type:DataTypes.ENUM('booked','available'),
         defaultValue:'available',
         allowNull:true
     },
@@ -63,6 +60,15 @@ const Room = sequelize.define('Room',{
     room_price_monthly:{
         type:DataTypes.DECIMAL(10,2),
         allowNull:false
+    },
+    categories:{
+        type:DataTypes.ENUM("single bed","flat","double bed","office","apartment"),
+        defaultValue:'single bed',
+        allowNull:false
+    }, 
+    availabele_from:{
+        type:DataTypes.DATE,
+        allowNull:true
     }
 
 },{
@@ -71,13 +77,8 @@ const Room = sequelize.define('Room',{
    createdAt:'createdat',
    updatedAt:"updatedat",
    indexes:[
-    {fields:['roomid']},
-    {fields:['room_price_monthly']},{
-        fields:['city']
-    },
-    {
-        fields:['status']
-    }
+    {fields:['roomid','room_price_monthly','city','status','categories']},
+    
       ]
 })
 

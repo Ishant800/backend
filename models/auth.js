@@ -45,21 +45,24 @@ const User = sequelize.define(
 const UserDetails = sequelize.define(
   'userdetails',
   {
-    user_detailsId: {
+    user_detailsId:{
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
+
     userid: {
       type: DataTypes.UUID,
       allowNull: false,
       references: { model: User, key: 'userid' },
       onDelete: 'CASCADE',
     },
+
     fullName: {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    
     Phone_no: {
       type: DataTypes.STRING, 
       allowNull: true,

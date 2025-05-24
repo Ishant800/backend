@@ -45,24 +45,22 @@ exports.userlogin = async (req, res) => {
     const passwordmatch = await bcrypt.compare(password, user.password);
     if (!passwordmatch) return res.status(401).json({ error: "Password not matched" });
 
-    const token = jwt.sign(
-      { id: user.userid,role:user.role, username: user.username, email: user.email },
-      process.env.SECRETE_KEY,
-      { expiresIn: "7d" }
-    );
+
+    const token = jwt.sign({
+      id:user.userid,role:user.role,username:user.username,email:user.email
+    },process.env.SECRETE_KEY,{expiresIn:'7d'})
 
     const acesstoken = jwt.sign({
       id:user.userid,role:user.role,username:user.username,email:user.email
     },process.env.SECRETE_KEY,{expiresIn:'7d'})
 
      
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
 
-    return res.status(200).json({ acesstoken });
+    return res.status(200).cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    }).json({ acesstoken });
   } catch (error) {
     console.error("Login Error:", error);
     return res.status(500).json({ error: "Internal server error" });
