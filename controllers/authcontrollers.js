@@ -6,7 +6,7 @@ configDotenv();
 
 exports.usersignup = async (req, res) => {
   try {
-    console.log("Request Body:", req.body); 
+    
     const { username, email, password } = req.body;
 
     if (!username || !email || !password)
@@ -33,13 +33,12 @@ exports.usersignup = async (req, res) => {
 
 exports.userlogin = async (req, res) => {
   try {
-    console.log("Request Body:", req.body); 
     const { email, password } = req.body;
 
     if (!email || !password)
       return res.status(401).json({ error: "All fields are mandatory" });
 
-    const user = await User.findOne({ where: { email } });
+    const user = await User.findOne({email:email});
     if (!user) return res.status(401).json({ error: "User not found" });
 
     const passwordmatch = await bcrypt.compare(password, user.password);
@@ -47,11 +46,11 @@ exports.userlogin = async (req, res) => {
 
 
     const token = jwt.sign({
-      id:user.userid,role:user.role,username:user.username,email:user.email
+      id:user._id,role:user.role,username:user.username,email:user.email
     },process.env.SECRETE_KEY,{expiresIn:'7d'})
 
     const acesstoken = jwt.sign({
-      id:user.userid,role:user.role,username:user.username,email:user.email
+      id:user._id,role:user.role,username:user.username,email:user.email
     },process.env.SECRETE_KEY,{expiresIn:'7d'})
 
      
@@ -77,10 +76,7 @@ exports.profileupdate = async(req,res)=>{
       if(!imagepath) return res.status(401).json({error:"image url missing"})
 
       
-        const existsuser = await User.findOne({
-    where:{
-        userid:userId 
-    }})
+        const existsuser = await User.findById({id:userId})
 
 if(!existsuser) return res.status(401).json({error:"user not found"})
 

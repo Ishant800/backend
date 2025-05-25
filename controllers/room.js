@@ -2,12 +2,13 @@ const { Room } = require("../models/roommodel")
 
 exports.listroom = async(req,res)=>{
 try {
-    if(!req.file.path)
+    if(!req.files)
         console.log('files not found')
 
-const imagepath = req.file?.path
+const imagepath = req.files.map(file => file.path)
 console.log(imagepath)
-const userid = req.user.id  
+const userid = req.user.id 
+console.log(userid) 
 if(!userid) return res.status("user id not found")
   const room = await Room.create({
    userid:userid,images:imagepath,...req.body
@@ -67,7 +68,7 @@ exports.deleteroom = async (req,res)=>{
 
 exports.getrooms = async (req,res)=>{
   try {
-   const rooms = await Room.findAll()
+   const rooms = await Room.find()
    if(!rooms) return res.status(401).json({Message:"no rooms found"})
    return res.status(200).json({rooms})
 
@@ -80,11 +81,7 @@ exports.getrooms = async (req,res)=>{
 exports.roomdetails = async (req,res)=>{
   try{
     const id = req.params.id
-    const existroom = await Room.findOne({
-      where:{
-        roomid:id
-      }
-    })
+    const existroom = await Room.findOne({_id:id})
   if(!existroom) return res.status(401).json({Message:"room not found in databases"})
 
    

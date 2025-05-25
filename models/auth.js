@@ -1,107 +1,81 @@
-const db = require('../databaseconf/database');
-const { DataTypes } = require('sequelize');
-const sequelize = db.sequelize;
+const mongoose = require('mongoose');
+const { Schema, model } = mongoose;
 
-const User = sequelize.define(
-  'User',
+
+const userSchema = new Schema(
   {
-    userid: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      primaryKey: true,
-    },
     username: {
-      type: DataTypes.STRING,
-      allowNull: false,
+      type: String,
+      required: true,
+      trim: true,
     },
     email: {
-      type: DataTypes.STRING,
-      allowNull: false,
+      type: String,
+      required: true,
       unique: true,
+      lowercase: true,
+      trim: true,
     },
     password: {
-      type: DataTypes.STRING,
-      allowNull: false,
+      type: String,
+      required: true,
     },
     role: {
-      type: DataTypes.ENUM('user', 'landlords', 'admin'),
-      defaultValue: 'user',
-      allowNull:false
+      type: String,
+      enum: ['user', 'landlords', 'admin'],
+      default: 'user',
+      required: true,
     },
-  },
-  {
-    timestamps: true,
-    tableName: 'users',
-    createdAt: 'created_at',
-    updatedAt: 'updated_at',
-    indexes: [
-      {
-        fields: ['email'],
-      },
-    ],
   }
 );
 
-const UserDetails = sequelize.define(
-  'userdetails',
+// UserDetails Schema
+const userDetailsSchema = new Schema(
   {
-    user_detailsId:{
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      primaryKey: true,
+    user_detailsId: {
+      type: String,
+      unique: true,
     },
-
     userid: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      references: { model: User, key: 'userid' },
-      onDelete: 'CASCADE',
+      type: String,
+      required: true,
+      ref: 'User',
     },
-
     fullName: {
-      type: DataTypes.STRING,
-      allowNull: false,
+      type: String,
+      required: true,
+      trim: true,
     },
-    
     Phone_no: {
-      type: DataTypes.STRING, 
-      allowNull: true,
+      type: String,
+      default: null,
     },
     bio: {
-      type: DataTypes.STRING,
-      allowNull: true,
+      type: String,
+      default: null,
     },
     profile_pic_url: {
-      type: DataTypes.STRING,
-      allowNull: true,
+      type: String,
+      default: null,
     },
     city: {
-      type: DataTypes.STRING,
-      allowNull: true,
+      type: String,
+      default: null,
     },
     country: {
-      type: DataTypes.STRING,
-      allowNull: true,
+      type: String,
+      default: null,
     },
     Zip_code: {
-      type: DataTypes.STRING,
-      allowNull: true,
+      type: String,
+      default: null,
     },
-  },
-  {
-    tableName: 'userdetails',
-    timestamps: true,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at',
-    indexes: [
-      {
-        fields: ['userid'],
-      },
-    ],
   }
+  
 );
 
-User.hasOne(UserDetails, { foreignKey: 'userid', onDelete: 'CASCADE' });
-UserDetails.belongsTo(User, { foreignKey: 'userid' });
+// Creating Models
+const User = model('User', userSchema);
+const UserDetails = model('UserDetails', userDetailsSchema);
 
 module.exports = { User, UserDetails };

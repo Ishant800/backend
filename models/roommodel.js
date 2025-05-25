@@ -1,89 +1,75 @@
-const db = require("../databaseconf/database")
-const sequelize = db.sequelize
-const {DataTypes, UUIDV4} = require('sequelize')
-const { User } = require("./auth")
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const Room = sequelize.define('Room',{
-    roomid:{
-        type:DataTypes.UUID,
-        defaultValue:DataTypes.UUIDV4,
-        primaryKey:true
+const RoomSchema = new Schema({
+    userid: {
+        type: String,
+        required: true
     },
-    userid:{
-        type:DataTypes.UUID,
-        references:{model:User,key:'userid'},
-        onDelete:'CASCADE',
-        allowNull:false
+    roomtitle: {
+        type: String,
+        required: true
     },
-    roomtitle:{
-        type:DataTypes.STRING,
-        allowNull:false
+    roomsize: {
+        type: String,
+        required: true
     },
-    
-    roomsize:{
-        type:DataTypes.STRING,
-        allowNull:false
+    images: {
+        type: [String],
+        required: false
     },
-    images:{
-        type:DataTypes.STRING,
-        allowNull:true
+    description: {
+        type: String,
+        required: true
     },
-    description:{
-        type:DataTypes.TEXT,
-        allowNull:false
+    status: {
+        type: String,
+        enum: ['booked', 'available'],
+        default: 'available',
+        required: false
     },
-    status:{
-        type:DataTypes.ENUM('booked','available'),
-        defaultValue:'available',
-        allowNull:true
+    features: {
+        type: [String],
+        required: false
     },
-    features:{
-        type:DataTypes.ARRAY(DataTypes.STRING),
-    allowNull:true
+    location: {
+        type: String,
+        required: false
     },
-    location:{
-        type:DataTypes.STRING,
-        allowNull:true
+    city: {
+        type: String,
+        required: true
     },
-    city:{
-        type:DataTypes.STRING,
-        allowNull:false
+    address: {
+        type: String,
+        required: false
     },
-    address:{
-        type:DataTypes.STRING,
-        allowNull:true
+    country: {
+        type: String,
+        required: false
     },
-    country:{
-      type:DataTypes.STRING,
-     allowNull:true
+    room_price_monthly: {
+        type: Number,
+        required: true
     },
-    room_price_monthly:{
-        type:DataTypes.DECIMAL(10,2),
-        allowNull:false
+    categories: {
+        type: String,
+        enum: ['single bed', 'flat', 'double bed', 'office', 'apartment'],
+        default: 'single bed',
+        required: true
     },
-    categories:{
-        type:DataTypes.ENUM("single bed","flat","double bed","office","apartment"),
-        defaultValue:'single bed',
-        allowNull:false
-    }, 
-    availabele_from:{
-        type:DataTypes.DATE,
-        allowNull:true
+    availabele_from: {
+        type: Date,
+        required: false
     }
+}, {
+    collection: 'room'
+});
 
-},{
-    tableName:"room",
-   timestamps:true,
-   createdAt:'createdat',
-   updatedAt:"updatedat",
-   indexes:[
-    {fields:['roomid','room_price_monthly','city','status','categories']},
-    
-      ]
-})
 
-User.hasOne(Room, { foreignKey: 'userid', onDelete: 'CASCADE' });
-Room.belongsTo(User,{foreignKey:"userid"})
-module.exports = {
-    Room
-}
+RoomSchema.index({ roomid: 1, room_price_monthly: 1, city: 1, status: 1, categories: 1 });
+
+
+const Room = mongoose.model('Room', RoomSchema);
+
+module.exports = { Room };
