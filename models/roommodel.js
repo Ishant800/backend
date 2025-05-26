@@ -58,16 +58,15 @@ const RoomSchema = new Schema({
         default: 'single bed',
         required: true
     },
-    availabele_from: {
+    availabele_from: { 
         type: Date,
         required: false
     }
 }, {
-    collection: 'room'
+    collection: 'room',
+    timestamps:true
 });
 
-
-RoomSchema.index({ roomid: 1, room_price_monthly: 1, city: 1, status: 1, categories: 1 });
 
 
 const Room = mongoose.model('Room', RoomSchema);

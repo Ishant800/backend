@@ -8,4 +8,4 @@ authroute.post("/usersignup",usersignup)
 authroute.post("/userlogin",userlogin)
  authroute.post("/userupdate",accesstoken,upload.single('image'),profileupdate)
 
-module.exports = authroute  
+module.exports = authroute    

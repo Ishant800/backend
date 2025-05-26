@@ -13,7 +13,7 @@ if(!userid) return res.status("user id not found")
   const room = await Room.create({
    userid:userid,images:imagepath,...req.body
   })
-  return res.status(201).json({room:"room listed sucessfully",room})
+  return res.status(201).json({room})
 
 } catch (error) {
 console.log(error)
@@ -49,18 +49,15 @@ exports.deleteroom = async (req,res)=>{
   try {
     const id = req.params.id
     const existroom = await Room.findOne({
-      where:{
-        roomid:id
-      }
+     
+        _id:id
+    
     })
   if(!existroom) return res.status(401).json({Message:"room not found"})
 
-  await Room.destroy({where:{
-    roomid:id
-  }})
+  await Room.findByIdAndDelete(id)
 
-  return res.status(200).json({Message:"room deleted sucessfully"})
-
+  return res.status(200).json({message:"deleted sucessfully"})
   } catch (error) {
     return res.status(501).json({Message:"internal server error"})
   }
@@ -90,5 +87,17 @@ exports.roomdetails = async (req,res)=>{
 
   } catch (error) {
     return res.status(501).json({Message:"internal server error"})
+  }
+}
+
+exports.properties = async (req,res)=>{
+  try {
+    const userid = req.user.id
+    const data = await Room.find({userid:userid})
+    if(!data) return res.status(401).json({message:"no properties found"})
+    return res.status(200).json({data})
+    } catch (error) {
+      console.log(error)
+    return res.status(501).json({error:"internal server error"})
   }
 }
