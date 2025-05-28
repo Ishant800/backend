@@ -24,18 +24,14 @@ return res.status(501).json({error:"internal server error"})
  
 exports.roomupdate = async(req,res)=>{
     try {
-        const token = req.cookies.token
-        if(!token) return res.status(401).json({error:"token not provided"})
-
+        if(!req.files) return res.status(401).json({message:"images not provided"})
+         const imagepaths = req.files.map(file => file.path)
        const id = req.params.id;
 
-    await Room.update({...req.body}, {
-      where: { roomid: id }
-     
-    });
+   const room = await Room.findByIdAndUpdate( id,
+    {images:imagepaths,...req.body},{ new: true });
     return res.status(200).json({
-      success: true,
-      message: "Room updated successfully",
+      room
     
     });
 

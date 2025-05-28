@@ -59,7 +59,7 @@ const RoomSchema = new Schema({
         required: true
     },
     availabele_from: { 
-        type: Date,
+        type: String,
         required: false
     }
 }, {

@@ -64,11 +64,11 @@ exports.userlogin = async (req, res) => {
     console.error("Login Error:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
-};
+}; 
 
 
 exports.profileupdate = async(req,res)=>{
-    try {
+    try { 
       const userId = req.user.id
        if(!userId) return res.status(401).json({error:"missing userid"})
       
