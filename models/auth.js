@@ -20,7 +20,7 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
-    role: {
+    role: { 
       type: String,
       enum: ['user', 'landlords', 'admin'],
       default: 'user',
@@ -37,12 +37,12 @@ const userDetailsSchema = new Schema(
   {
     user_detailsId: {
       type: String,
-      unique: true,
+      
     },
     userid: {
-      type: String,
+       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: 'User',
+     ref:"User"
     },
     fullName: {
       type: String,

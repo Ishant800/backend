@@ -3,8 +3,9 @@ const Schema = mongoose.Schema;
 
 const RoomSchema = new Schema({
     userid: {
-        type: String,
-        required: true
+        type:String,
+        required: true,
+        ref:"User"
     },
     roomtitle: {
         type: String,

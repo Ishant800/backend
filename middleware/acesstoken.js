@@ -4,7 +4,8 @@ configDotenv()
 
 exports.accesstoken = async (req,res,next)=>{
     try {
-       const authHeader = req.headers['authorization'];       
+       const authHeader = req.headers['authorization'];   
+       console.log(authHeader)    
        const token = authHeader && authHeader.split(' ')[1];
     // const token = req.cookies?.token
        if(!token) return res.status(401).json({message:"token not provided"})
@@ -25,6 +26,18 @@ exports.adminmiddleware = async (req,res,next) =>{
         if(!req.user) return res.status(401).json({Message:"acess denied you are not admin"})
          const admincheck = req.user
         if(!admincheck.role === "landlords") return res.status(401).json({Message:"Acess deneid"})
+         
+            next()    
+        } catch (error) {
+        return res.status(401).json({Message:"Invalid acess denied"})
+    }
+}
+
+exports.usermiddleware = async (req,res,next) =>{
+    try {
+        if(!req.user) return res.status(401).json({Message:"acess denied you are not admin"})
+         const admincheck = req.user
+        if(!admincheck.role === "users") return res.status(401).json({Message:"Acess deneid"})
          
             next()    
         } catch (error) {

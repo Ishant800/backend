@@ -1,5 +1,6 @@
+const Roombooked = require("../models/bookedroom")
 const { Room } = require("../models/roommodel")
-
+const mongoose = require('mongoose')
 exports.listroom = async(req,res)=>{
 try {
     if(!req.files)
@@ -89,8 +90,71 @@ exports.roomdetails = async (req,res)=>{
 exports.properties = async (req,res)=>{
   try {
     const userid = req.user.id
+    
+    
     const data = await Room.find({userid:userid})
-    if(!data) return res.status(401).json({message:"no properties found"})
+   
+    if(!data || data.length === 0) return res.status(401).json({message:"no properties found"})
+    return res.status(200).json({data})
+    } catch (error) {
+      console.log(error)
+    return res.status(501).json({error:"internal server error"})
+  }
+} 
+
+exports.requestbook = async (req,res)=>{
+  try {
+    const id = req.user.id 
+    const data = await Roombooked.create({
+      userid:id,...req.body
+    })
+    
+    if(!data){
+      return res.status(401).json({Error:"failed to request"})
+    }
+    
+    return res.status(200).json({Message:"request sucessfully waiting for owners actions"})
+
+  } catch (error) {
+    console.log(error)
+    return res.status(501).json({Error:"internal server error"})
+  }
+}
+
+exports.updaterequest = async (req,res)=>{
+  try {
+    const id = req.params.id
+    const {status,roomid} = req.body
+
+    const existroom = await Room.findById(roomid)
+    if(!existroom) return res.status(403).json({Error:"Room not find"})
+
+
+    const update = await Roombooked.findByIdAndUpdate(id,{
+      status
+    }) 
+    
+    await Room.findByIdAndUpdate(roomid,{
+      status
+    })
+
+
+    if(!update) return res.status(401).json({Error:"failed to action perform"})
+   return res.status(200).json({Message:"Sucessfully perform action"})
+
+
+  } catch (error) {
+    return res.status(501).json({Error:"internal server error"})
+  }
+}
+
+
+exports.ownersbookingrequest = async (req,res)=>{
+  try {
+   const ownersid = req.user.id 
+    const data = await Roombooked.find({ownerid:ownersid})
+   
+    if(!data || data.length === 0) return res.status(401).json({message:"no properties found"})
     return res.status(200).json({data})
     } catch (error) {
       console.log(error)

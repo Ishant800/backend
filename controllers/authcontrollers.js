@@ -8,11 +8,12 @@ exports.usersignup = async (req, res) => {
   try {
     
     const { username, email, password } = req.body;
+    console.log(req.body)
 
     if (!username || !email || !password)
       return res.status(401).json({ error: "All fields are mandatory" });
 
-    const userexists = await User.findOne({ where: { email } });
+    const userexists = await User.findOne({email:email});
     if (userexists) return res.status(401).json({ error: "User already exists" });
 
     const hashedpassword = await bcrypt.hash(password, 8);
@@ -76,7 +77,7 @@ exports.profileupdate = async(req,res)=>{
       if(!imagepath) return res.status(401).json({error:"image url missing"})
 
       
-        const existsuser = await User.findById({id:userId})
+        const existsuser = await User.findById(userId)
 
 if(!existsuser) return res.status(401).json({error:"user not found"})
 
@@ -92,4 +93,25 @@ if(updateuser)
         console.log(error)
         return res.status(500).json({error:"internal server error"})
     }
+}
+
+
+exports.users = async (req,res)=>{
+  try {
+    const users = await User.find()
+    if(!users) return res.status(401).json({messae:'no user found'})
+      return res.status(200).json({users})
+  } catch (error) {
+    return res.status(500).json({error:"internal server error"})
+  }
+}
+exports.getusers = async (req,res)=>{
+  try {
+    const id = req.body
+    const users = await User.findById(id)
+    if(!users) return res.status(401).json({messae:'no user found'})
+      return res.status(200).json({users})
+  } catch (error) {
+    return res.status(500).json({error:"internal server error"})
+  }
 }
