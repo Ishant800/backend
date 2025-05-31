@@ -13,7 +13,8 @@ roomrouter.get("/rooms/:id",roomdetails)
 roomrouter.get("/getproperties",accesstoken,properties)
 
 roomrouter.post("/requestroom",accesstoken,usermiddleware,requestbook)
-roomrouter.post("/requestroom/:id",accesstoken,adminmiddleware,updaterequest)
+roomrouter.post("/updaterequest",accesstoken,adminmiddleware,updaterequest)
+roomrouter.post("/getcustomers",accesstoken,adminmiddleware,requestbook)
  
 roomrouter.post("/usersbookinglist",accesstoken,adminmiddleware,ownersbookingrequest)
 module.exports = roomrouter

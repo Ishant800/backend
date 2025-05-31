@@ -5,7 +5,7 @@ configDotenv()
 exports.accesstoken = async (req,res,next)=>{
     try {
        const authHeader = req.headers['authorization'];   
-       console.log(authHeader)    
+         
        const token = authHeader && authHeader.split(' ')[1];
     // const token = req.cookies?.token
        if(!token) return res.status(401).json({message:"token not provided"})
@@ -35,7 +35,7 @@ exports.adminmiddleware = async (req,res,next) =>{
 
 exports.usermiddleware = async (req,res,next) =>{
     try {
-        if(!req.user) return res.status(401).json({Message:"acess denied you are not admin"})
+        if(!req.user) return res.status(401).json({Message:"Acess deneid only users can request for booking."})
          const admincheck = req.user
         if(!admincheck.role === "users") return res.status(401).json({Message:"Acess deneid"})
          

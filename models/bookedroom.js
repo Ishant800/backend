@@ -24,6 +24,8 @@ const bookedroomschema = new mongoose.Schema({
         default:"available" 
     }
     
+},{
+    timestamps:true
 })
 
 const Roombooked = mongoose.model("Roombook",bookedroomschema)
