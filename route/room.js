@@ -1,5 +1,5 @@
 const express = require('express')
-const { listroom, roomupdate, deleteroom, getrooms, roomdetails, properties, requestbook, updaterequest, ownersbookingrequest } = require('../controllers/room')
+const { listroom, roomupdate, deleteroom, getrooms, roomdetails, properties, requestbook, updaterequest, ownersbookingrequest, getcustomers, deleteRoomAndBookings } = require('../controllers/room')
 const roomrouter = express.Router()
 const{upload} = require('../cloud/cloudinary')
 const { accesstoken, adminmiddleware, usermiddleware } = require('../middleware/acesstoken')
@@ -14,7 +14,9 @@ roomrouter.get("/getproperties",accesstoken,properties)
 
 roomrouter.post("/requestroom",accesstoken,usermiddleware,requestbook)
 roomrouter.post("/updaterequest",accesstoken,adminmiddleware,updaterequest)
-roomrouter.post("/getcustomers",accesstoken,adminmiddleware,requestbook)
- 
+roomrouter.post("/getcustomersrequest",accesstoken,adminmiddleware,requestbook)
+ roomrouter.get("/customers",accesstoken,adminmiddleware,getcustomers)
+ roomrouter.get("/deleterequest/:id",accesstoken,adminmiddleware,deleteRoomAndBookings)
 roomrouter.post("/usersbookinglist",accesstoken,adminmiddleware,ownersbookingrequest)
+
 module.exports = roomrouter

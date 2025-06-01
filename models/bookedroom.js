@@ -18,10 +18,10 @@ const bookedroomschema = new mongoose.Schema({
         
     useremail:String,
     contactno:String,
-    status:{
+    roomstatus:{
         type:String,
-        enum:["available","booked","pending"],
-        default:"available" 
+        enum:["accept","reject","pending"],
+        default:"pending" 
     }
     
 },{

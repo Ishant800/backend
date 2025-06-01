@@ -9,23 +9,18 @@ const sendEmail = async ({ to, subject, html }) => {
             pass: process.env.EMAIL_PASS
         }
     })
-
     const mailOptions = {
         from: `"MeroRoom" <${process.env.EMAIL_USER}>`,
         to,
         subject,
         html,
     }
-
-
     try {
         await transporter.sendMail(mailOptions)
         console.log("sucessfully email sent")
     } catch (error) {
         console.log(error)
-    }
-}
-
+    }}
 module.exports = sendEmail
 
 
