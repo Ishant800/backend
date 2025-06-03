@@ -32,52 +32,52 @@ const userSchema = new Schema(
   }
 );
 
-// UserDetails Schema
+
 const userDetailsSchema = new Schema(
   {
-    user_detailsId: {
-      type: String,
-      
-    },
+   
     userid: {
-       type: mongoose.Schema.Types.ObjectId,
-      required: true,
-     ref:"User"
+       type: String,
+     
+      ref:"User"
     },
     fullName: {
       type: String,
-      required: true,
+      
       trim: true,
     },
     Phone_no: {
       type: String,
-      default: null,
+      
     },
     bio: {
       type: String,
-      default: null,
+      
     },
     profile_pic_url: {
       type: String,
-      default: null,
+    
     },
     city: {
       type: String,
-      default: null,
+      
     },
     country: {
       type: String,
-      default: null,
+     
     },
     Zip_code: {
       type: String,
-      default: null,
+      
     },
+  },
+  {
+    timestamps:true
   }
   
 );
 
-// Creating Models
+
 const User = model('User', userSchema);
 const UserDetails = model('UserDetails', userDetailsSchema);
 

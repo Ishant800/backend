@@ -37,7 +37,7 @@ exports.usermiddleware = async (req,res,next) =>{
     try {
         if(!req.user) return res.status(401).json({Message:"Acess deneid only users can request for booking."})
          const admincheck = req.user
-        if(!admincheck.role === "users") return res.status(401).json({Message:"Acess deneid"})
+        if(!admincheck.role === "user") return res.status(401).json({Message:"Acess deneid"})
          
             next()    
         } catch (error) {
