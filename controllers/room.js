@@ -6,14 +6,16 @@ const sendEmail = require("../utility/email")
 
 exports.listroom = async (req, res) => {
   try {
-    if (!req.files)
-      console.log('files not found')
+   if (!req.files || req.files.length === 0) {
+  return res.status(400).json({ message: "No images provided" });
+}
+
 
     const imagepath = req.files.map(file => file.path)
-    console.log(imagepath)
+    
     const userid = req.user.id
-    console.log(userid)
-    if (!userid) return res.status("user id not found")
+    
+    if (!userid) return res.status(400).json({ error: "User ID not found" });
     const room = await Room.create({
       userid: userid, images: imagepath, ...req.body
     })
@@ -28,7 +30,10 @@ exports.listroom = async (req, res) => {
 
 exports.roomupdate = async (req, res) => {
   try {
-    if (!req.files) return res.status(401).json({ message: "images not provided" })
+    if (!req.files || req.files.length === 0) {
+  return res.status(400).json({ message: "No images provided" });
+}
+
     const imagepaths = req.files.map(file => file.path)
     const id = req.params.id;
 
@@ -66,7 +71,8 @@ exports.deleteroom = async (req, res) => {
 exports.getrooms = async (req, res) => {
   try {
     const rooms = await Room.find()
-    if (!rooms) return res.status(401).json({ Message: "no rooms found" })
+    if (!rooms.length) return res.status(404).json({ message: "No rooms found" });
+
     return res.status(200).json({ rooms })
 
   } catch (error) {
@@ -80,7 +86,7 @@ exports.roomdetails = async (req, res) => {
     const id = req.params.id
     const existroom = await Room.findOne({ _id: id })
     if (!existroom) return res.status(401).json({ Message: "room not found in databases" })
-
+   
     return res.status(200).json({ existroom })
 
   } catch (error) {
@@ -88,14 +94,12 @@ exports.roomdetails = async (req, res) => {
   }
 }
 
+
 exports.properties = async (req, res) => {
   try {
     const userid = req.user.id
-
-
     const data = await Room.find({ userid: userid })
-
-    if (!data || data.length === 0) return res.status(401).json({ message: "no properties found" })
+  if (!data || data.length === 0) return res.status(401).json({ message: "no properties found" })
     return res.status(200).json({ data })
   } catch (error) {
     console.log(error)
@@ -110,14 +114,20 @@ exports.requestbook = async (req, res) => {
     const user = await User.findById(id)
     const owner = await User.findById(ownerid)
     const room = await Room.findById(roomid)
+    if (!user || !owner || !room) {
+  return res.status(404).json({ Error: "Invalid data: user/owner/room not found" });
+}
+const alreadyBooked = await Roombooked.findOne({ userid: user._id, roomid });
+if (alreadyBooked) return res.status(409).json({ error: "Already requested" });
+
     const data = await Roombooked.create({
       ownerid,
+      userid: user._id,
       roomname: room.roomtitle,
       roomlocation: room.location,
       username: user.username,
       useremail: user.email,
       roomid})
-      
 
       if (!data) {
       return res.status(401).json({ Error: "failed to request" })}
@@ -125,16 +135,12 @@ exports.requestbook = async (req, res) => {
       to: user.email,
       subject: "Your Room Booking Request is Received!",
       html: `
-        <h2>Booking Confirmation</h2>
-        <p>Dear customers,</p>
-        <p>Thank you for requesting <strong>${room.roomtitle}</strong>.</p>
-        <p> Location :${room.location} </p>
-        <p>We will notify you once the landlord responds.</p>
-        <br/>
-        <p>— MeroRoom Team</p>
-      `,
-    })
-
+       
+  <h2>Hi ${user.username}</h2>
+  <p>Your request for <strong>${room.roomtitle}</strong> has been received.</p>
+  <p>Location: ${room.location.city}, ${room.location.country}</p>
+  ...`
+ })
 
     await sendEmail({
       to: owner.email,
@@ -159,9 +165,12 @@ exports.requestbook = async (req, res) => {
 exports.deleteRoomAndBookings = async (req, res) => {
   try {
     const { id } = req.params;
-    await Roombooked.findOneAndDelete(id)
+   await Roombooked.deleteMany({ roomid: id });
+    await Room.findByIdAndUpdate(id, {
+      status:"available"
+    })
 
-    return res.status(200).json({ message: "Room and bookings deleted" });
+   return res.status(200).json({ message: "Booking rejected"});
   } catch (err) {
     console.log(err);
     return res.status(500).json({ error: "Internal server error" });
@@ -172,26 +181,24 @@ exports.deleteRoomAndBookings = async (req, res) => {
 exports.updaterequest = async (req, res) => {
   try {
     const userid = req.user.id
-
     const { id, status, roomid, roomstatus } = req.body
     if(roomstatus === "reject"){
       await Roombooked.findByIdAndDelete(id)
-      return res.status(200)
+      return res.status(200).json({ message: "Booking rejected" });
     }
     else{
            const existroom = await Room.findById(roomid)
     if (!existroom) return res.status(403).json({ Error: "Room not find" })
-    const user = await User.findById(userid)
+    if (existroom.userid !== userid) return res.status(403).json({ error: "Not authorized" });
 
+    const user = await User.findById(userid)
 
     const update = await Roombooked.findByIdAndUpdate(id, {
       roomstatus
     })
-
     await Room.findByIdAndUpdate(roomid, {
       status
     })
-
     await sendEmail({
       to: user.email,
       subject: "Room Booked Confirm!",
@@ -205,27 +212,16 @@ exports.updaterequest = async (req, res) => {
         <br/>
         <p>— MeroRoom Team</p>
       `,
-
     })
-
-
     if (!update) 
-     
       return res.status(401).json({ Error: "failed to action perform" })
-
     console.log("all test passed")
     return res.status(200).json({ Message: "Sucessfully perform action" })
-
-
     }
-    
-   
   } catch (error) {
     console.log(error)
     return res.status(501).json({ Error: "internal server error" })
-  }
-}
-
+  }}
 
 exports.ownersbookingrequest = async (req, res) => {
   try {
@@ -242,9 +238,9 @@ exports.ownersbookingrequest = async (req, res) => {
 
 exports.getcustomers = async (req, res) => {
   try {
-    const {id} = req.user.id
+    const id = req.user.id
     const requestdata = await Roombooked.find({ownerid:id})
-   console.log(requestdata)
+   
     return res.status(200).json({ requestdata })
   } catch (error) {
     console.log(error)

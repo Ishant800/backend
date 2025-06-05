@@ -102,10 +102,21 @@ exports.users = async (req,res)=>{
 
 exports.getusers = async (req,res)=>{
   try {
-    const id = req.body
+    
+    const id = req.params.userid
+    
     const users = await User.findById(id)
-    if(!users) return res.status(401).json({messae:'no user found'})
-      return res.status(200).json({users})
+    const details = await UserDetails.findOne({userid:id})
+
+    const usersdata = {
+      id:users._id,
+      name:users.username,
+      profilepic:details.profile_pic_url,
+      email:users.email,
+      phoneno:details.Phone_no
+    }
+     
+      return res.status(200).json({usersdata})
   } catch (error) {
     return res.status(500).json({error:"internal server error"})
   }

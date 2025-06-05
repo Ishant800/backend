@@ -33,10 +33,7 @@ const RoomSchema = new Schema({
         type: [String],
         required: false
     },
-    location: {
-        type: String,
-        required: false
-    },
+   
     city: {
         type: String,
         required: true
@@ -62,7 +59,14 @@ const RoomSchema = new Schema({
     availabele_from: { 
         type: String,
         required: false
-    }
+    },
+   location: {
+  lat: Number,
+  lng: Number,
+  
+}
+
+
 }, {
     collection: 'room',
     timestamps:true

@@ -16,9 +16,13 @@ app.use(cors({
 
 const authroute = require("./route/auth")
 const roomroute = require("./route/room")
+const qnaroute = require('./route/qnaroute')
+const reviewroute = require('./route/review')
 
 app.use("/auth",authroute) 
 app.use('/room',roomroute)
+app.use('/Qna',qnaroute)
+app.use('/reviw',reviewroute)
 
 //database calling
 db()
