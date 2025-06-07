@@ -4,7 +4,7 @@ const { review, getreviews } = require('../controllers/reviewandqna')
 const reviewroute = express.Router()
 
 reviewroute.post("/review/:id",accesstoken,review)
-reviewroute.get("/review/:id",accesstoken,getreviews)
+reviewroute.get("/review/:id",getreviews)
 
 module.exports = reviewroute
 

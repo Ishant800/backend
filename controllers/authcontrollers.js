@@ -129,8 +129,10 @@ exports.mydetails = async (req,res)=>{
     const details = await UserDetails.findOne({userid:id})
 
     const mydetails = {
+      userid:id,
       name:me.username,
       email:me.email,
+      role:me.role,
       profilepic:details.profile_pic_url || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpZrw_z22PXFc37Yqqir6DdpReF5vpJLc3JN10O-qrfLEmCAr_wOCgJ2i5NytJMYABNbw&usqp=CAU",
       fullname:details.fullName,
       phoneno:details.Phone_no,

@@ -9,10 +9,12 @@ exports.listroom = async (req, res) => {
    if (!req.files || req.files.length === 0) {
   return res.status(400).json({ message: "No images provided" });
 }
-
-
-    const imagepath = req.files.map(file => file.path)
-    
+console.log(req.body)
+if(req.body.length < 0){
+  console.log('no items reveived',req.body)
+}
+    const imagepath = await req.files.map(file => file.path)
+    console.log(imagepath)
     const userid = req.user.id
     
     if (!userid) return res.status(400).json({ error: "User ID not found" });
@@ -23,7 +25,7 @@ exports.listroom = async (req, res) => {
 
   } catch (error) {
     console.log(error)
-    return res.status(501).json({ error: "internal server error" })
+    return res.status(501).json({ error })
   }
 }
 
