@@ -25,7 +25,6 @@ This is the **backend API** for the RoomFinder project — a full-featured platf
 - **JWT** for Auth
 - **Multer** / **Cloudinary** for image handling
 - **Nodemailer** for email verification
-- **Socket.io** (for real-time updates - optional)
 - **CORS**, **dotenv**, **bcryptjs**, and more
 
 ---
