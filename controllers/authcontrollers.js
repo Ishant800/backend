@@ -75,7 +75,7 @@ exports.profileupdate = async(req,res)=>{
 
 if(!existsuser) return res.status(401).json({error:"user not found"})
 
-    const updateuser = await UserDetails.create({
+    const updateuser = await UserDetails.findByIdAndUpdate({
         userid:existsuser._id,profile_pic_url:imagepath,...req.body
     })
 

@@ -9,9 +9,9 @@ exports.listroom = async (req, res) => {
    if (!req.files || req.files.length === 0) {
   return res.status(400).json({ message: "No images provided" });
 }
-console.log(req.body)
+
 if(req.body.length < 0){
-  console.log('no items reveived',req.body)
+  console.log('no details reveived',req.body)
 }
     const imagepath = await req.files.map(file => file.path)
     console.log(imagepath)
@@ -126,7 +126,7 @@ if (alreadyBooked) return res.status(409).json({ error: "Already requested" });
       ownerid,
       userid: user._id,
       roomname: room.roomtitle,
-      roomlocation: room.location,
+      roomlocation: room.city,
       username: user.username,
       useremail: user.email,
       roomid})

@@ -8,3 +8,4 @@ qnaroute.get("/qna/:id",accesstoken,getqna)
 
 module.exports = qnaroute
 
+ 
